@@ -11,9 +11,11 @@ def safe_name(string: Union[str, bytes]):
 
 # Custom Bancho IRC exception.
 class BanchoIRCException(Exception):
+    """Custom expection."""
     pass
 
 class BanchoIRC:
+    """A main IRC server instance."""
     def __init__(self, name: str, address: tuple):
         self.server_name: str = name
         self.address: tuple = address
@@ -27,7 +29,7 @@ class BanchoIRC:
         self.clients.remove(client)
 
 class BanchoChannel:
-    """Represetnts a one bancho text channel"""
+    """Represetnts a one bancho text channel."""
     def __init__(self, server: BanchoIRC, name: bytes, desc: bytes, destruct: bool = True, autojoin: bool = False) -> None:
         self.server: BanchoIRC = server
         self.name: bytes = name
@@ -47,6 +49,7 @@ class BanchoChannel:
             self.server.destruct_channel(self)
 
 class BanchoClient:
+    """Represents a standalone client."""
     def __init__(self, server: BanchoIRC, client: socket.socket):
         self.server: BanchoIRC = server
         self.client: socket.socket = client
@@ -60,3 +63,8 @@ class BanchoClient:
         if channel and channel not in self.channels:
             self.channels.append(channel)
             channel.on_user_join(self)
+
+    def part_channel(self, channel: BanchoChannel):
+        if channel and channel in self.channels:
+            self.channels.remove(channel)
+            channel.on_user_join(channel)
